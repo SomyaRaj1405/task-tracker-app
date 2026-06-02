@@ -1,6 +1,8 @@
 # VeloTask ⚡
 
-VeloTask is a premium, high-performance, full-stack Task Tracker and Mini-Project Management application. It is designed around a modular **Node.js/Express** backend serving a RESTful API backed by **SQLite**, and a dynamic, responsive **Next.js 15** frontend using the **App Router** and **Premium Vanilla CSS** styling.
+### 🌐 Live Deployments
+* **Frontend Web App (Vercel)**: [https://frontend-five-zeta-89.vercel.app](https://frontend-five-zeta-89.vercel.app)
+* **Backend REST API (Render)**: [https://velo-task-backend.onrender.com](https://velo-task-backend.onrender.com)
 
 ---
 
