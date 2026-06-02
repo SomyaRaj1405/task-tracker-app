@@ -1,0 +1,234 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '../../hooks/useAuth';
+import Spinner from '../../components/UI/Spinner';
+import { useToast } from '../../components/UI/Toast';
+import { UserIcon, MailIcon, LockIcon, InfoIcon } from '../../components/UI/Icons';
+
+export default function Signup() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const { signup, loading, error, clearError } = useAuth();
+  const { showToast } = useToast();
+
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
+    setValidationError('');
+    clearError();
+
+    if (!name || !name.trim()) {
+      setValidationError('Full name is required.');
+      return;
+    }
+    if (!email || !email.trim()) {
+      setValidationError('Email address is required.');
+      return;
+    }
+    if (!password) {
+      setValidationError('Password is required.');
+      return;
+    }
+    if (password.length < 6) {
+      setValidationError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    try {
+      await signup(name.trim(), email.trim(), password);
+      showToast('Account created successfully', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to create account', 'error');
+      console.error('Registration process failed:', err.message);
+    }
+  };
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      padding: '24px',
+      background: 'radial-gradient(circle at top right, rgba(222, 76, 58, 0.05) 0%, transparent 40%)'
+    }}>
+      <div 
+        className="card-panel animate-fade-in" 
+        style={{
+          width: '100%',
+          maxWidth: '380px',
+          padding: '28px 24px',
+          background: '#ffffff'
+        }}
+      >
+        {/* Branding header */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          {/* Logo element */}
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            background: 'var(--color-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 10px auto',
+            boxShadow: '0 2px 8px rgba(222, 76, 58, 0.25)'
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white" />
+              <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h1 style={{
+            fontSize: '1.25rem',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.02em',
+            marginBottom: '4px'
+          }}>
+            VeloTask
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+            Create a free account to track your project workspace.
+          </p>
+        </div>
+
+        {/* Validation Errors */}
+        {validationError && (
+          <div style={{
+            background: 'var(--color-danger-bg)',
+            color: 'var(--color-danger)',
+            border: '1px solid var(--color-danger-border)',
+            padding: '8px 10px',
+            borderRadius: '6px',
+            fontSize: '0.75rem',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <InfoIcon size={12} color="var(--color-danger)" />
+            <span>{validationError}</span>
+          </div>
+        )}
+
+        {/* Global Context Auth Errors */}
+        {error && (
+          <div style={{
+            background: 'var(--color-danger-bg)',
+            color: 'var(--color-danger)',
+            border: '1px solid var(--color-danger-border)',
+            padding: '8px 10px',
+            borderRadius: '6px',
+            fontSize: '0.75rem',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <InfoIcon size={12} color="var(--color-danger)" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Signup Form */}
+        <form onSubmit={handleSignupSubmit}>
+          {/* Name Input */}
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">Full Name</label>
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <UserIcon size={12} color="var(--text-muted)" />
+              </div>
+              <input 
+                id="name"
+                type="text"
+                className="form-control"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+                autoComplete="name"
+                autoFocus
+                style={{ width: '100%', paddingLeft: '30px' }}
+              />
+            </div>
+          </div>
+
+          {/* Email Input */}
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <MailIcon size={12} color="var(--text-muted)" />
+              </div>
+              <input 
+                id="email"
+                type="email"
+                className="form-control"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                autoComplete="email"
+                style={{ width: '100%', paddingLeft: '30px' }}
+              />
+            </div>
+          </div>
+
+          {/* Password Input */}
+          <div className="form-group" style={{ marginBottom: '20px' }}>
+            <label htmlFor="password" className="form-label">Password</label>
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <LockIcon size={12} color="var(--text-muted)" />
+              </div>
+              <input 
+                id="password"
+                type="password"
+                className="form-control"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="new-password"
+                style={{ width: '100%', paddingLeft: '30px' }}
+              />
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button 
+            type="submit"
+            className="btn btn-primary"
+            disabled={loading}
+            style={{ width: '100%', padding: '9px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '16px' }}
+          >
+            {loading ? <Spinner size="sm" color="white" /> : 'Create Account'}
+          </button>
+        </form>
+
+        {/* Redirect toggle */}
+        <div style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+          Already have an account?{' '}
+          <Link href="/login" style={{
+            color: 'var(--color-primary)',
+            textDecoration: 'none',
+            fontWeight: 600,
+            transition: 'color 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.target.style.color = 'var(--color-primary-hover)'}
+          onMouseLeave={(e) => e.target.style.color = 'var(--color-primary)'}
+          >
+            Log in
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
